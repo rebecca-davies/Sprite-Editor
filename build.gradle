@@ -3,8 +3,8 @@ plugins {
     id 'org.jetbrains.kotlin.jvm' version '1.4.32'
 }
 
-group 'org.example'
-version '1.0-SNAPSHOT'
+group 'sh.rebecca'
+version '1.0.0-SNAPSHOT'
 
 repositories {
     mavenCentral()
