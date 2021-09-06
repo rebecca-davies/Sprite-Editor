@@ -13,14 +13,14 @@ import javax.swing.JComponent
 @Component
 class ModelRenderer(private val reader: ModelReader, private val library: CacheLibrary) : JComponent() {
 
-    private val model: Model = reader.read(ByteArrayInputStream(library.data(7, 20000)!!))
-
+    var model: Model = reader.read(ByteArrayInputStream(library.data(7, 20000)!!))
     var cameraPitch = 128
     var cameraYaw = 0
     var rotation = 0;
 
     override fun paintComponent(g: Graphics) {
-        var viewport = ImageProducer3D(650, 800)
+        super.paintComponent(g)
+        val viewport = ImageProducer3D(width, height)
         viewport.bind()
         Graphics3D.createPalette(1.0)
         Graphics3D.texturedShading = false
