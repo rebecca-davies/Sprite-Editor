@@ -1,2 +1,4 @@
 rootProject.name = 'inventory-tool'
 
+include ':rt3-api'
+include ':app'

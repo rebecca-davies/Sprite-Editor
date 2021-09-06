@@ -19,7 +19,6 @@ package image;
  * MA 02110-1301  USA
  */
 import media.Model;
-import media.Model;
 
 import java.awt.Font;
 import java.util.Arrays;
