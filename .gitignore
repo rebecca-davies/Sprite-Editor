@@ -1,5 +1,5 @@
-# Created by https://www.toptal.com/developers/gitignore/api/intellij+all,eclipse,netbeans,gradle,maven,java,windows,linux,macos,sublimetext,vscode
-# Edit at https://www.toptal.com/developers/gitignore?templates=intellij+all,eclipse,netbeans,gradle,maven,java,windows,linux,macos,sublimetext,vscode
+### Inventory Editor ###
+data/cache/
 
 ### Eclipse ###
 .metadata

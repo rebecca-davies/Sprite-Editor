@@ -1,25 +1,23 @@
-package sh.rebecca.inventory.component
+package sh.rebecca.inventory.model
 
 import com.displee.cache.CacheLibrary
 import image.Graphics3D
 import image.ImageProducer3D
 import media.Model
+import org.springframework.stereotype.Component
 import reader.ModelReader
-import sh.rebecca.inventory.model.decode
-import util.Colors
 import java.awt.Graphics
-import java.io.File
+import java.io.ByteArrayInputStream
 import javax.swing.JComponent
 
-class ModelRenderer : JComponent() {
+@Component
+class ModelRenderer(private val reader: ModelReader, private val library: CacheLibrary) : JComponent() {
+
+    private val model: Model = reader.read(ByteArrayInputStream(library.data(7, 20000)!!))
 
     var cameraPitch = 128
     var cameraYaw = 0
     var rotation = 0;
-
-    val library = CacheLibrary("C:\\Users\\Mikan\\jagexcache\\oldschool\\LIVE")
-    val testModel = library.data(7, 18932)
-    val model = decode(testModel!!)
 
     override fun paintComponent(g: Graphics) {
         var viewport = ImageProducer3D(650, 800)
@@ -31,7 +29,6 @@ class ModelRenderer : JComponent() {
     }
 
     private fun setup() {
-
         model.calculateBoundaries()
         model.calculateNormals()
         model.calculateLighting(64, 768, 100, 100, 100)

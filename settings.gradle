@@ -1,4 +1,4 @@
-rootProject.name = 'inventory-tool'
+rootProject.name = 'sh.rebecca.inventory-tool'
 
 include ':rt3-api'
 include ':app'
