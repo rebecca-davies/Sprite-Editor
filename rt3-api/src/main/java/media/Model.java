@@ -97,6 +97,11 @@ public class Model {
     public static int[] vertexProjectX = new int[MAX_VERTEX_COUNT];
 
     /**
+     * The texture render types for OSRS, currently unused
+     */
+
+    public static byte[] textureRenderTypes = new byte[MAX_TRIANGLE_COUNT];
+    /**
      * The transformed y component of a vertex.
      */
     public static int[] vertexProjectY = new int[MAX_VERTEX_COUNT];
@@ -792,6 +797,9 @@ public class Model {
             z = y * cameraPitchSine + z * cameraPitchCosine >> 16;
             y = x0;
 
+            if(z <= 0) {
+                z = 1;
+            }
             vertexDepth[v] = z;
             vertexScreenX[v] = centerX + (x << 9) / z;
             vertexScreenY[v] = centerY + (y << 9) / z;
