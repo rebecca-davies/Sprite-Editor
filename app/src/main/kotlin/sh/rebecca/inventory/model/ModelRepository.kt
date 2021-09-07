@@ -7,7 +7,7 @@ import sh.rebecca.inventory.repository.Repository
 
 interface ModelRepository : Repository<Model>
 
-private const val modelIndex = 7
+private const val modelIndex = 1
 
 @Component
 class CacheModelRepository(private val reader: RSModelReader, private val cache: CacheLibrary) : ModelRepository {

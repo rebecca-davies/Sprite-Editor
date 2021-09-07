@@ -7,70 +7,83 @@ import image.ImageProducer3D
 import media.Model
 import org.springframework.stereotype.Component
 import reader.ModelReader
+import sh.rebecca.inventory.definition.Obj
+import sh.rebecca.inventory.definition.ObjReader
 import sh.rebecca.inventory.input.fixRotation
-import tornadofx.observable
 import java.awt.Graphics
-import java.awt.event.MouseAdapter
-import java.awt.event.MouseEvent
-import java.awt.event.MouseListener
-import java.awt.event.MouseMotionListener
+import java.awt.event.*
+import java.awt.event.MouseEvent.*
 import java.io.ByteArrayInputStream
 import javax.swing.JComponent
-import kotlin.math.max
-import kotlin.math.min
 
 @Component
-class ModelRenderer(private val reader: ModelReader, private val library: CacheLibrary) : JComponent() {
+class ModelRenderer(private val reader: ModelReader, private val objReader: ObjReader, private val library: CacheLibrary) : JComponent() {
 
-    var model: Model = reader.read(ByteArrayInputStream(library.data(7, 20000)!!))
-    var cameraPitch = 128
-    var cameraYaw = 0
-    var rotation = 0;
+
+    private final val obj = objReader.lookup(1050)
+    var model: Model = reader.read(ByteArrayInputStream(library.data(1, obj.model)!!))
 
     init {
         this.addMouseMotionListener(this.drag())
+        this.addMouseWheelListener(this.scroll())
     }
 
     override fun paintComponent(g: Graphics) {
         super.paintComponent(g)
         val viewport = ImageProducer3D(width, height)
         viewport.bind()
+        Graphics2D.fillRect(0, 0, width, height, 0xffffff)
         Graphics3D.createPalette(1.0)
         Graphics3D.texturedShading = false
         setup()
         viewport.draw(graphics, 0, 0)
     }
 
-    var rX = 0
-    var rY = 0
+    var rotationX = 0
+    var rotationY = 0
+    var mouseX = 0
+    var mouseY = 0
+    var zoom = 200
+    var sceneX = 0
+    var sceneY = 0
 
     private fun setup() {
         model.calculateBoundaries()
         model.calculateNormals()
         model.calculateLighting(64, 768, 100, 100, 100)
-        Model.frameTriangleCount = 0
-        model.draw(rY, rX, 0, 0, 100, 400, 100)
+        model.draw(obj.pitch, obj.yaw, 0, obj.translateX, obj.translateY, obj.zoom, 100)
         repaint()
     }
 
-    var mX = 0
-    var mY = 0
-
-
     fun drag() = object: MouseMotionListener {
         override fun mouseDragged(e: MouseEvent?) {
-            if(e!!.y < mY) rY -= (mY - e.y) else if(e.y > mY) rY += (e.y - mY)
-            if(e.x < mX) rX += (mX - e.x) else if(e.x > mX) rX -= (e.x - mX)
-            mX = e.x
-            mY = e.y
-            rX = fixRotation(rX)
-            rY = fixRotation(rY)
+            when(e!!.button) {
+                BUTTON1 -> {
+                    if (e.y < mouseY) rotationY -= (mouseY - e.y) else if (e.y > mouseY) rotationY += (e.y - mouseY)
+                    if (e.x < mouseX) rotationX += (mouseX - e.x) else if (e.x > mouseX) rotationX -= (e.x - mouseX)
+                    mouseX = e.x
+                    mouseY = e.y
+                    rotationX = fixRotation(rotationX)
+                    rotationY = fixRotation(rotationY)
+                }
 
+                BUTTON3 -> {
+                    if (e.y < mouseY) sceneY -= 5 else if (e.y > mouseY) sceneY += 5
+                    if (e.x < mouseX) sceneX -= 5 else if (e.x > mouseX) sceneX += 5
+                    mouseX = e.x
+                    mouseY = e.y
+                }
+            }
         }
 
         override fun mouseMoved(e: MouseEvent?) {
-
         }
+    }
+    fun scroll() = object: MouseWheelListener {
+        override fun mouseWheelMoved(e: MouseWheelEvent?) {
+            zoom += e!!.wheelRotation * 25
+        }
+
     }
 
 
