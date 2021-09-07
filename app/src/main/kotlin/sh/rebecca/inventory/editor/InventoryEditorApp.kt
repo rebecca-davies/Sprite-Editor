@@ -1,4 +1,4 @@
-package sh.rebecca.inventory
+ package sh.rebecca.inventory
 
 import javafx.application.Application
 import org.springframework.boot.WebApplicationType

@@ -78,5 +78,4 @@ public class ImageProducer3D extends ImageProducer {
 		Graphics3D.offsets = this.offsets;
 		Graphics3D.depthBuffer = this.depthBuffer;
 	}
-
 }

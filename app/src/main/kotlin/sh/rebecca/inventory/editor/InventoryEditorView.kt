@@ -3,6 +3,9 @@ package sh.rebecca.inventory.editor
 import javafx.beans.property.SimpleObjectProperty
 import javafx.embed.swing.SwingNode
 import javafx.scene.control.SelectionMode
+import javafx.scene.paint.Color
+import javafx.scene.paint.LinearGradient
+import javafx.scene.paint.Paint
 import sh.rebecca.inventory.model.ModelRenderer
 import sh.rebecca.inventory.model.ModelService
 import tornadofx.*
@@ -40,6 +43,7 @@ class InventoryEditorView : View() {
     override val root = borderpane {
         modelWrapper.content = modelRenderer
         center = modelWrapper
+
         right = listview(modelIds) {
             selectionModel.selectionMode = SelectionMode.SINGLE
             bindSelected(selectedModel)

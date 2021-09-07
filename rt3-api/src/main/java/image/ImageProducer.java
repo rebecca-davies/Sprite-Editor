@@ -144,4 +144,8 @@ public class ImageProducer {
 		g.drawImage(this.image, x, y, null);
 	}
 
+	public void kill() {
+	    this.pixels = null;
+    }
+
 }
