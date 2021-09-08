@@ -131,6 +131,26 @@ public class Model {
      */
     public static int[] oneOverFixed1616 = Graphics3D.oneOverFixed1616;
 
+
+    public void recolor(int src, int dst) {
+        for (int k = 0; k < triangleCount; k++) {
+            if (triangleColor[k] == src) {
+                triangleColor[k] = dst;
+            }
+        }
+    }
+
+    /**
+     * Scales the model
+     */
+    public void scale(int x, int y, int z) {
+        for (int v = 0; v < vertexCount; v++) {
+            vertexX[v] = (vertexX[v] * x) / 128;
+            vertexY[v] = (vertexY[v] * z) / 128;
+            vertexZ[v] = (vertexZ[v] * y) / 128;
+        }
+    }
+
     /**
      *
      * @param x the x.

@@ -25,7 +25,10 @@ data class Obj(
     var translateY: Int,
     var zoom: Int,
     var ambient: Int,
-    var attenuation: Int)
+    var attenuation: Int,
+    var scaleX: Int,
+    var scaleY: Int,
+    var scaleZ: Int)
 
 
 @Component
@@ -66,6 +69,9 @@ class ObjReader(private val library: CacheLibrary, private val modelService: Mod
         var replacementColors: IntArray? = null
         var ambient = 0
         var attenuation = 0
+        var scaleX = 0
+        var scaleY = 0
+        var scaleZ = 0
 
         do {
             var opcode = buffer.readUnsignedByte()
@@ -128,13 +134,13 @@ class ObjReader(private val library: CacheLibrary, private val modelService: Mod
                     buffer.readUnsignedShort()
                     buffer.readUnsignedShort()
                 }
-                110 -> buffer.readUnsignedShort()
-                111 -> buffer.readUnsignedShort()
-                112 -> buffer.readUnsignedShort()
+                110 -> scaleX = buffer.readUnsignedShort()
+                111 -> scaleZ = buffer.readUnsignedShort()
+                112 -> scaleY = buffer.readUnsignedShort()
                 113 -> ambient = buffer.readByte().toInt()
                 114 -> attenuation = buffer.readByte() * 5
                 115 -> buffer.readUnsignedShort()
-                0 -> return Obj(id, modelId, originalColors, replacementColors, pitch, yaw, roll, translateX, translateY, zoom, ambient, attenuation)
+                0 -> return Obj(id, modelId, originalColors, replacementColors, pitch, yaw, roll, translateX, translateY, zoom, ambient, attenuation, scaleX, scaleY, scaleZ)
             }
         } while (true)
     }
@@ -154,7 +160,15 @@ class ObjReader(private val library: CacheLibrary, private val modelService: Mod
 
         val model: Model = modelService.getModel(definition.model) ?: return null
 
-        Graphics3D.createPalette(1.0);
+        Graphics3D.createPalette(0.7);
+        if ((definition.scaleX != 128) || (definition.scaleZ != 128) || (definition.scaleY != 128)) {
+            //model.scale(definition.scaleX, definition.scaleY, definition.scaleZ)
+        }
+        if (definition.originalColors != null) {
+            for (i in 0 until definition.originalColors!!.size) {
+                model.recolor(definition.originalColors!![i], definition.replacementColors!![i])
+            }
+        }
         model.calculateBoundaries();
         model.calculateNormals();
         model.calculateLighting(64 + definition.ambient, 768 + definition.attenuation, -50, -10, -50);
@@ -166,7 +180,7 @@ class ObjReader(private val library: CacheLibrary, private val modelService: Mod
         val scanOffsets: IntArray = Graphics3D.offsets
         val raster: IntArray = Graphics2D.target
         val width: Int = Graphics2D.targetWidth
-        val height: Int = Graphics2D.targetWidth
+        val height: Int = Graphics2D.targetHeight
         val clipLeft: Int = Graphics2D.left
         val clipRight: Int = Graphics2D.right
         val clipBottom: Int = Graphics2D.bottom
@@ -213,14 +227,13 @@ class ObjReader(private val library: CacheLibrary, private val modelService: Mod
         }
 
         if (backColour == 0) {
-            sprites.put(id, rendered)
+            sprites[id] = rendered
         }
-        Graphics2D.setTarget(raster, height, width)
+        Graphics2D.setTarget(raster, width, height)
         Graphics2D.setBounds(clipLeft, clipTop, clipRight, clipBottom)
-        Graphics3D.centerY = centreX
+        Graphics3D.centerX = centreX
         Graphics3D.centerY = centreY
         Graphics3D.offsets = scanOffsets
-        Graphics3D.texturedShading = true
 
         return rendered
     }
