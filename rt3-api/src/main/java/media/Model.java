@@ -750,7 +750,7 @@ public class Model {
      * @param sceneZ the camera z.
      * @param cameraPitch the camera pitch.
      */
-    public void draw(int pitch, int yaw, int roll, int sceneX, int sceneY, int sceneZ, int cameraPitch) {
+    public void draw(int pitch, int yaw, int roll, int eyePitch, int sceneX, int sceneY, int sceneZ) {
         final int centerX = Graphics3D.centerX;
         final int centerY = Graphics3D.centerY;
 
@@ -763,8 +763,8 @@ public class Model {
         int rollSine = sin[roll];
         int rollCosine = cos[roll];
 
-        int cameraPitchSine = sin[cameraPitch];
-        int cameraPitchCosine = cos[cameraPitch];
+        int cameraPitchSine = sin[eyePitch];
+        int cameraPitchCosine = cos[eyePitch];
 
         for (int v = 0; v < vertexCount; v++) {
             int x = vertexX[v];
@@ -806,6 +806,73 @@ public class Model {
         }
 
         draw(0, false, false);
+    }
+
+    public void drawSimple(int pitch, int yaw, int roll, int eyePitch, int eyeX, int eyeY, int eyeZ) {
+        int centerX = Graphics3D.centerX;
+        int centerY = Graphics3D.centerY;
+        int sinPitch = sin[pitch];
+        int cosPitch = cos[pitch];
+        int sinYaw = sin[yaw];
+        int cosYaw = cos[yaw];
+        int sinRoll = sin[roll];
+        int cosRoll = cos[roll];
+        int sinEyePitch = sin[eyePitch];
+        int cosEyePitch = cos[eyePitch];
+        int midZ = ((eyeY * sinEyePitch) + (eyeZ * cosEyePitch)) >> 16;
+
+        for (int v = 0; v < vertexCount; v++) {
+            int x = vertexX[v];
+            int y = vertexY[v];
+            int z = vertexZ[v];
+
+            // Local Space -> Model Space
+
+            if (roll != 0) {
+                int x_ = ((y * sinRoll) + (x * cosRoll)) >> 16;
+                y = ((y * cosRoll) - (x * sinRoll)) >> 16;
+                x = x_;
+            }
+
+            if (pitch != 0) {
+                int y_ = ((y * cosPitch) - (z * sinPitch)) >> 16;
+                z = ((y * sinPitch) + (z * cosPitch)) >> 16;
+                y = y_;
+            }
+
+            if (yaw != 0) {
+                int x_ = ((z * sinYaw) + (x * cosYaw)) >> 16;
+                z = ((z * cosYaw) - (x * sinYaw)) >> 16;
+                x = x_;
+            }
+
+            // Model Space -> View Space
+
+            x += eyeX;
+            y += eyeY;
+            z += eyeZ;
+
+            int y_ = ((y * cosEyePitch) - (z * sinEyePitch)) >> 16;
+            z = ((y * sinEyePitch) + (z * cosEyePitch)) >> 16;
+            y = y_;
+
+            // View Space -> Screen Space
+
+            if(z <= 0) {
+                z = 1;
+            }
+
+            vertexScreenX[v] = centerX + ((x << 9) / z);
+            vertexScreenY[v] = centerY + ((y << 9) / z);
+            vertexDepth[v] = z - midZ;
+
+            // Store viewspace coordinates to be transformed into screen space later (textured or clipped triangles)
+
+        }
+        try {
+            draw(0, false, false);
+        } catch (Exception ignored) {
+        }
     }
 
     /**

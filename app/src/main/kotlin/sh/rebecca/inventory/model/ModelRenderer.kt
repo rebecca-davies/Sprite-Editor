@@ -4,10 +4,8 @@ import com.displee.cache.CacheLibrary
 import image.Graphics2D
 import image.Graphics3D
 import image.ImageProducer3D
-import media.Model
 import org.springframework.stereotype.Component
 import reader.ModelReader
-import sh.rebecca.inventory.definition.Obj
 import sh.rebecca.inventory.definition.ObjReader
 import sh.rebecca.inventory.input.fixRotation
 import java.awt.Graphics
@@ -20,8 +18,8 @@ import javax.swing.JComponent
 class ModelRenderer(private val reader: ModelReader, private val objReader: ObjReader, private val library: CacheLibrary) : JComponent() {
 
 
-    private final val obj = objReader.lookup(1050)
-    var model: Model = reader.read(ByteArrayInputStream(library.data(1, obj.model)!!))
+    var obj = objReader.lookup(0) //test
+
 
     init {
         this.addMouseMotionListener(this.drag())
@@ -33,8 +31,6 @@ class ModelRenderer(private val reader: ModelReader, private val objReader: ObjR
         val viewport = ImageProducer3D(width, height)
         viewport.bind()
         Graphics2D.fillRect(0, 0, width, height, 0xffffff)
-        Graphics3D.createPalette(1.0)
-        Graphics3D.texturedShading = false
         setup()
         viewport.draw(graphics, 0, 0)
     }
@@ -48,10 +44,17 @@ class ModelRenderer(private val reader: ModelReader, private val objReader: ObjR
     var sceneY = 0
 
     private fun setup() {
+       /* val model = reader.read(ByteArrayInputStream(library.data(1, obj.model)!!))
+        Graphics3D.createPalette(1.0);
+        Graphics3D.texturedShading = false;
         model.calculateBoundaries()
         model.calculateNormals()
-        model.calculateLighting(64, 768, 100, 100, 100)
-        model.draw(obj.pitch, obj.yaw, 0, obj.translateX, obj.translateY, obj.zoom, 100)
+        model.calculateLighting(64, 768, -50, -10, -50)
+        val sin: Int = (Graphics3D.sin[obj.pitch] * obj.zoom) shr 16
+        val cos: Int = (Graphics3D.cos[obj.pitch] * obj.zoom) shr 16
+        model?.draw(0, obj.yaw, obj.roll, obj.pitch, obj.translateX, sin + (model.minBoundY / 2) + obj.translateY, cos + obj.translateY)*/
+
+        objReader.sprite(obj.id, 0, 0)?.draw(100, 100)
         repaint()
     }
 

@@ -3,9 +3,7 @@ package sh.rebecca.inventory.editor
 import javafx.beans.property.SimpleObjectProperty
 import javafx.embed.swing.SwingNode
 import javafx.scene.control.SelectionMode
-import javafx.scene.paint.Color
-import javafx.scene.paint.LinearGradient
-import javafx.scene.paint.Paint
+import sh.rebecca.inventory.model.ItemService
 import sh.rebecca.inventory.model.ModelRenderer
 import sh.rebecca.inventory.model.ModelService
 import tornadofx.*
@@ -22,19 +20,22 @@ class InventoryEditorStyle : Stylesheet() {
     }
 }
 
-class InventoryEditorView : View() {
+class InventoryEditorView() : View() {
 
+    private val itemService: ItemService by di()
     private val modelService: ModelService by di()
     private val modelRenderer: ModelRenderer by di()
     private val modelWrapper = SwingNode()
-    private val selectedModel = SimpleObjectProperty<Int>()
-    private val modelIds = (0 until modelService.getModelCount()).toList().toObservable()
+    private val selectedItem = SimpleObjectProperty<Int>()
+    private val modelIds = (0 until itemService.getCount()).toList().toObservable()
 
     init {
-        selectedModel.onChange { selected ->
+        selectedItem.onChange { selected ->
             selected?.let { id ->
                 runAsync {
-                    modelService.getModel(id)?.let { modelRenderer.model = it }
+                    itemService.getObj(id)?.let {
+                        modelRenderer.obj = it
+                    }
                 }
             }
         }
@@ -46,7 +47,7 @@ class InventoryEditorView : View() {
 
         right = listview(modelIds) {
             selectionModel.selectionMode = SelectionMode.SINGLE
-            bindSelected(selectedModel)
+            bindSelected(this@InventoryEditorView.selectedItem)
         }
     }
 }
