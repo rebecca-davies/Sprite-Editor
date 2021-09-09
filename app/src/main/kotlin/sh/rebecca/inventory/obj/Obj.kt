@@ -1,5 +1,6 @@
 package sh.rebecca.inventory.obj
 
+
 data class Obj(
     var id: Int,
     var model: Int,
@@ -16,3 +17,4 @@ data class Obj(
     var scaleX: Int,
     var scaleY: Int,
     var scaleZ: Int)
+

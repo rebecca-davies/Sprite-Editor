@@ -143,7 +143,7 @@ public class Model {
     /**
      * Scales the model
      */
-    public void scale(int x, int y, int z) {
+    public void scale(int x, int z, int y) {
         for (int v = 0; v < vertexCount; v++) {
             vertexX[v] = (vertexX[v] * x) / 128;
             vertexY[v] = (vertexY[v] * z) / 128;
@@ -443,9 +443,9 @@ public class Model {
             int dyCA = vertexY[c] - vertexY[a];
             int dzCA = vertexZ[c] - vertexZ[a];
 
-            int lX = dyAB * dzCA - dyCA * dzAB;
-            int lY = dzAB * dxCA - dzCA * dxAB;
-            int lZ = dxAB * dyCA - dxCA * dyAB;
+            int lX = (dyAB * dzCA) - (dyCA * dzAB);
+            int lY = (dzAB * dxCA) - (dzCA * dxAB);
+            int lZ = (dxAB * dyCA) - (dxCA * dyAB);
 
             // while it's too large, shrink it by half
             for (; (lX > 8192 || lY > 8192 || lZ > 8192 || lX < -8192 || lY < -8192 || lZ < -8192);) {

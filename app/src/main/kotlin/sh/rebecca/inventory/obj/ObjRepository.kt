@@ -15,9 +15,11 @@ class CacheObjRepository(private val reader: ObjReader, private val cache: Cache
     init {
         val idxBuffer = Unpooled.wrappedBuffer(cache.data(0, 2, "obj.idx")!!)
         val dataBuffer = Unpooled.wrappedBuffer(cache.data(0, 2, "obj.dat")!!)
+
         objects = (0 until idxBuffer.readUnsignedShort()).map { id ->
             reader.read(dataBuffer, id)
         }.toList()
+
         idxBuffer.release()
         dataBuffer.release()
     }

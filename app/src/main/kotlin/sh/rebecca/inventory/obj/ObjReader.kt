@@ -9,19 +9,19 @@ class ObjReader {
 
     fun read(buffer: ByteBuf, id: Int): Obj {
         var modelId = 0
-        var zoom = 0
-        var roll = 0
+        var zoom = 2000
         var translateX = 0
         var translateY = 0
         var pitch = 0
         var yaw = 0
+        var roll = 0
         var originalColors: IntArray? = null
         var replacementColors: IntArray? = null
         var ambient = 0
         var attenuation = 0
-        var scaleX = 0
-        var scaleY = 0
-        var scaleZ = 0
+        var scaleX = 128
+        var scaleY = 128
+        var scaleZ = 128
 
         do {
             var opcode = buffer.readUnsignedByte()
@@ -35,13 +35,13 @@ class ObjReader {
                 7 -> {
                     translateX = buffer.readUnsignedShort()
                     if(translateX > 32767) {
-                        translateX -= 0x10000
+                        translateX -= 65536
                     }
                 }
                 8 -> {
                     translateY = buffer.readUnsignedShort()
                     if(translateY > 32767) {
-                        translateY -= 0x10000
+                        translateY -= 65536
                     }
                 }
                 10 -> buffer.readUnsignedShort()

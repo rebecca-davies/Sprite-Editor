@@ -22,17 +22,17 @@ class ObjService(private val repository: ObjRepository, private val modelService
     fun getObjSprite(obj: Obj): Sprite? {
         val model = modelService.getModel(obj.model) ?: return null
         Graphics3D.createPalette(0.7)
+
         if ((obj.scaleX != 128) || (obj.scaleZ != 128) || (obj.scaleY != 128)) {
-            //model.scale(definition.scaleX, definition.scaleY, definition.scaleZ)
+            model.scale(obj.scaleX, obj.scaleZ, obj.scaleY);
         }
+
         if (obj.originalColors != null) {
             for (i in 0 until obj.originalColors!!.size) {
                 model.recolor(obj.originalColors!![i], obj.replacementColors!![i])
             }
         }
-        model.calculateBoundaries()
-        model.calculateNormals()
-        model.calculateLighting(64 + obj.ambient, 768 + obj.attenuation, -50, -10, -50)
+        model.applyLighting(64 + obj.ambient, 768 + obj.attenuation, -50, -10, -50, true)
 
         val rendered = Sprite(32, 32)
         val centreX: Int = Graphics3D.centerX
@@ -47,32 +47,33 @@ class ObjService(private val repository: ObjRepository, private val modelService
         val clipTop: Int = Graphics2D.top
 
         Graphics3D.texturedShading = true
-
         Graphics2D.setTarget(rendered.pixels, 32, 32)
         Graphics2D.fillRect(0, 0, 32, 32, 0)
         Graphics3D.setOffsets()
-        val sin: Int = (Graphics3D.sin[obj.pitch] * obj.zoom) shr 16
-        val cos: Int = (Graphics3D.cos[obj.pitch] * obj.zoom) shr 16
-        model.draw(0, obj.yaw, obj.roll, obj.pitch, obj.translateX, sin + (model.minBoundY / 2) + obj.translateY, cos + obj.translateY)
+
+        val sinPitch: Int = (Graphics3D.sin[obj.pitch] * obj.zoom) shr 16
+        val cosPitch: Int = (Graphics3D.cos[obj.pitch] * obj.zoom) shr 16
+        model.drawSimple(0, obj.yaw ,obj.roll, obj.pitch, obj.translateX, sinPitch + (model.minBoundY / 2) + obj.translateY, cosPitch + obj.translateY)
+
         for (x in 31 downTo 0) {
             for (y in 31 downTo 0) {
-                if (rendered.pixels[x + y * 32] == 0) {
-                    if (x > 0 && rendered.pixels[x - 1 + y * 32] > 1) {
-                        rendered.pixels[x + y * 32] = 1
-                    } else if (y > 0 && rendered.pixels[x + (y - 1) * 32] > 1) {
-                        rendered.pixels[x + y * 32] = 1
-                    } else if (x < 31 && rendered.pixels[x + 1 + y * 32] > 1) {
-                        rendered.pixels[x + y * 32] = 1
-                    } else if (y < 31 && rendered.pixels[x + (y + 1) * 32] > 1) {
-                        rendered.pixels[x + y * 32] = 1
+                if (rendered.pixels[x + (y * 32)] == 0) {
+                    if (x > 0 && rendered.pixels[(x - 1) + (y * 32)] > 1) {
+                        rendered.pixels[x + (y * 32)] = 1
+                    } else if (y > 0 && rendered.pixels[x + ((y - 1) * 32)] > 1) {
+                        rendered.pixels[x + (y * 32)] = 1
+                    } else if (x < 31 && rendered.pixels[x + 1 + (y * 32)] > 1) {
+                        rendered.pixels[x + (y * 32)] = 1
+                    } else if (y < 31 && rendered.pixels[x + ((y + 1) * 32)] > 1) {
+                        rendered.pixels[x + (y * 32)] = 1
                     }
                 }
             }
         }
         for (x in 31 downTo 0) {
             for (y in 31 downTo 0) {
-                if (rendered.pixels[x + y * 32] == 0 && x > 0 && y > 0 &&rendered.pixels[x - 1 + (y - 1) * 32] > 0) {
-                    rendered.pixels[x + y * 32] = 0x302020
+                if (rendered.pixels[x + (y * 32)] == 0 && (x > 0) && (y > 0) && rendered.pixels[x - 1 + ((y - 1) * 32)] > 0) {
+                    rendered.pixels[x + (y * 32)] = 0x302020
                 }
             }
         }

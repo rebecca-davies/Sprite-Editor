@@ -58,8 +58,8 @@ class Scene(private val reader: ModelReader, private val objService: ObjService,
                 }
 
                 BUTTON3 -> {
-                    if (e.y < mouseY) sceneY -= 5 else if (e.y > mouseY) sceneY += 5
-                    if (e.x < mouseX) sceneX -= 5 else if (e.x > mouseX) sceneX += 5
+                    if (e.y < mouseY) obj.translateY -= 5 else if (e.y > mouseY) obj.translateY += 5
+                    if (e.x < mouseX) obj.translateX -= 5 else if (e.x > mouseX) obj.translateX += 5
                     mouseX = e.x
                     mouseY = e.y
                 }
@@ -71,7 +71,7 @@ class Scene(private val reader: ModelReader, private val objService: ObjService,
     }
     fun scroll() = object: MouseWheelListener {
         override fun mouseWheelMoved(e: MouseWheelEvent?) {
-            zoom += e!!.wheelRotation * 25
+            obj.zoom += e!!.wheelRotation * 25
         }
 
     }
