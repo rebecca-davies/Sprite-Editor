@@ -1,25 +1,21 @@
-package sh.rebecca.inventory.model
+package sh.rebecca.inventory.editor
 
 import com.displee.cache.CacheLibrary
 import image.Graphics2D
-import image.Graphics3D
 import image.ImageProducer3D
 import org.springframework.stereotype.Component
 import reader.ModelReader
-import sh.rebecca.inventory.definition.ObjReader
 import sh.rebecca.inventory.input.fixRotation
+import sh.rebecca.inventory.obj.ObjService
 import java.awt.Graphics
 import java.awt.event.*
 import java.awt.event.MouseEvent.*
-import java.io.ByteArrayInputStream
 import javax.swing.JComponent
 
 @Component
-class ModelRenderer(private val reader: ModelReader, private val objReader: ObjReader, private val library: CacheLibrary) : JComponent() {
+class Scene(private val reader: ModelReader, private val objService: ObjService, private val library: CacheLibrary) : JComponent() {
 
-
-    var obj = objReader.lookup(0) //test
-
+    var obj = objService.getObj(0)!! //test
 
     init {
         this.addMouseMotionListener(this.drag())
@@ -44,7 +40,7 @@ class ModelRenderer(private val reader: ModelReader, private val objReader: ObjR
     var sceneY = 0
 
     private fun setup() {
-        objReader.sprite(obj.id, 0, 0)?.draw(100, 100)
+        objService.getObjSprite(obj)?.draw(100, 100)
         repaint()
     }
 
@@ -79,8 +75,4 @@ class ModelRenderer(private val reader: ModelReader, private val objReader: ObjR
         }
 
     }
-
-
 }
-
-

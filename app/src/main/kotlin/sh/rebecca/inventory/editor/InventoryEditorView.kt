@@ -3,8 +3,7 @@ package sh.rebecca.inventory.editor
 import javafx.beans.property.SimpleObjectProperty
 import javafx.embed.swing.SwingNode
 import javafx.scene.control.SelectionMode
-import sh.rebecca.inventory.model.ItemService
-import sh.rebecca.inventory.model.ModelRenderer
+import sh.rebecca.inventory.obj.ObjService
 import sh.rebecca.inventory.model.ModelService
 import tornadofx.*
 
@@ -20,11 +19,10 @@ class InventoryEditorStyle : Stylesheet() {
     }
 }
 
-class InventoryEditorView() : View() {
+class InventoryEditorView : View() {
 
-    private val itemService: ItemService by di()
-    private val modelService: ModelService by di()
-    private val modelRenderer: ModelRenderer by di()
+    private val itemService: ObjService by di()
+    private val scene: Scene by di()
     private val modelWrapper = SwingNode()
     private val selectedItem = SimpleObjectProperty<Int>()
     private val modelIds = (0 until itemService.getCount()).toList().toObservable()
@@ -34,7 +32,7 @@ class InventoryEditorView() : View() {
             selected?.let { id ->
                 runAsync {
                     itemService.getObj(id)?.let {
-                        modelRenderer.obj = it
+                        scene.obj = it
                     }
                 }
             }
@@ -42,7 +40,7 @@ class InventoryEditorView() : View() {
     }
 
     override val root = borderpane {
-        modelWrapper.content = modelRenderer
+        modelWrapper.content = this@InventoryEditorView.scene
         center = modelWrapper
 
         right = listview(modelIds) {

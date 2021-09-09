@@ -1,4 +1,4 @@
-package sh.rebecca.inventory.util
+package sh.rebecca.inventory.buffer
 
 import io.netty.buffer.ByteBuf
 import java.nio.charset.StandardCharsets
