@@ -18,6 +18,8 @@ class CacheObjRepository(private val reader: ObjReader, private val cache: Cache
         objects = (0 until idxBuffer.readUnsignedShort()).map { id ->
             reader.read(dataBuffer, id)
         }.toList()
+        idxBuffer.release()
+        dataBuffer.release()
     }
 
     override fun findById(id: Int): Obj? {

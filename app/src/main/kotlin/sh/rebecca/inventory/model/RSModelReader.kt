@@ -64,13 +64,17 @@ class RSModelReader : ModelReader() {
             baseY = model.vertexY[vertex]
             baseZ = model.vertexZ[vertex]
         }
+        directions.release()
+        verticesX.release()
+        verticesY.release()
+        verticesZ.release()
 
         val colors = Unpooled.wrappedBuffer(data)
         colors.readBytes(header.colorDataOffset)
-
         for(face in 0 until header.faces) {
             model.triangleColor[face] = colors.readUnsignedShort()
         }
+        colors.release()
 
         val faceData = Unpooled.wrappedBuffer(data)
         faceData.readBytes(header.faceDataOffset)
@@ -131,6 +135,8 @@ class RSModelReader : ModelReader() {
                 model.triangleVertexC[vertex] = faceZ
             }
         }
+        types.release()
+        faceData.release()
         return model
     }
 
@@ -152,6 +158,7 @@ class RSModelReader : ModelReader() {
         val yDataOffset = buffer.readUnsignedShort()
         val zDataOffset = buffer.readUnsignedShort()
         val faceDataLength = buffer.readUnsignedShort()
+        buffer.release()
 
         var offset = 0
         val vertexDirectionOffset = offset

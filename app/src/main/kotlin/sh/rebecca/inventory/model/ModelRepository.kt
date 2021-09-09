@@ -12,7 +12,7 @@ interface ModelRepository : Repository<Model>
 class CacheModelRepository(private val reader: RSModelReader, private val cache: CacheLibrary) : ModelRepository {
 
     override fun findById(id: Int): Model? {
-        return reader.read(ByteArrayInputStream(cache.data(1, id)!!))
+        return cache.data(1, id)?.let { reader.read(ByteArrayInputStream(it)) }
     }
 
     override fun getCount(): Int {
