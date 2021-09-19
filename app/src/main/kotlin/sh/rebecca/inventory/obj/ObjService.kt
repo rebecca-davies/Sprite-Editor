@@ -54,7 +54,7 @@ class ObjService(private val repository: ObjRepository, private val modelService
 
         val sinPitch: Int = (Graphics3D.sin[obj.pitch] * obj.zoom) shr 16
         val cosPitch: Int = (Graphics3D.cos[obj.pitch] * obj.zoom) shr 16
-        model.drawSimple(0, obj.yaw ,obj.roll, obj.pitch, obj.translateX, sinPitch + (model.minBoundY / 2) + obj.translateY, cosPitch + obj.translateY)
+        model.drawSimple(0, obj.yaw ,obj.roll, obj.pitch, obj.translateX, sinPitch + (model.maxBoundY / 2) + obj.translateY, cosPitch + obj.translateY)
 
         for (x in 31 downTo 0) {
             for (y in 31 downTo 0) {
