@@ -753,10 +753,13 @@ public class Graphics2D {
 			// loop through row
 			for (x = 0; x < w; x++) {
 				// apply values
-				target[targetOffset++] = pixels[(u >> 8) + vOffset];
-
-				// step to the right
-				u += uStep;
+                int rgb = pixels[(u >> 8) + vOffset];
+                if (rgb != 0) {
+                    target[targetOffset++] = rgb;
+                } else {
+                    targetOffset++;
+                }
+                u += uStep;
 			}
 
 			// step down a row of pixels on the destination
@@ -767,6 +770,7 @@ public class Graphics2D {
 
 			// reset back to left
 			u = startU;
+
 		}
 	}
 

@@ -1,6 +1,7 @@
 package sh.rebecca.inventory
 
 import javafx.application.Application
+import javafx.stage.Stage
 import org.springframework.boot.WebApplicationType
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.builder.SpringApplicationBuilder
@@ -14,6 +15,11 @@ import kotlin.reflect.KClass
 class InventoryEditorApp : App(InventoryEditorView::class, InventoryEditorStyle::class) {
 
     private lateinit var context: ConfigurableApplicationContext
+
+    override fun start(stage: Stage) {
+        stage.isResizable = false
+        super.start(stage)
+    }
 
     override fun init() {
         super.init()

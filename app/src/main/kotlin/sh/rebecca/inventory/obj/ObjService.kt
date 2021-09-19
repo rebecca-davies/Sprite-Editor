@@ -78,7 +78,6 @@ class ObjService(private val repository: ObjRepository, private val modelService
                 }
             }
         }
-        Graphics2D.drawRect(0, 0, 32, 32, 0xff00ff)
         Graphics2D.setTarget(raster, width, height)
         Graphics2D.setBounds(clipLeft, clipTop, clipRight, clipBottom)
         Graphics3D.centerX = centreX

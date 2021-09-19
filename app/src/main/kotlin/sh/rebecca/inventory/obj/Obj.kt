@@ -3,6 +3,7 @@ package sh.rebecca.inventory.obj
 
 data class Obj(
     var id: Int,
+    var name: String,
     var model: Int,
     var originalColors: IntArray? = null,
     var replacementColors: IntArray? = null,

@@ -21,12 +21,13 @@ class ObjReader {
         var scaleX = 128
         var scaleY = 128
         var scaleZ = 128
+        var name = ""
 
         do {
             val opcode = buffer.read()
             when(opcode) {
                 1 ->  modelId = buffer.readUShort()
-                2 -> buffer.readString()
+                2 -> name = buffer.readString()
                 3 -> buffer.readStringBytes()
                 4 -> zoom = buffer.readUShort()
                 5 -> pitch = buffer.readUShort()
@@ -89,7 +90,7 @@ class ObjReader {
                 113 -> ambient = buffer.readByte().toInt()
                 114 -> attenuation = buffer.readByte() * 5
                 115 -> buffer.read()
-                0 -> return Obj(id, modelId, originalColors, replacementColors, pitch, yaw, roll, translateX, translateY, zoom, ambient, attenuation, scaleX, scaleY, scaleZ)
+                0 -> return Obj(id, name, modelId, originalColors, replacementColors, pitch, yaw, roll, translateX, translateY, zoom, ambient, attenuation, scaleX, scaleY, scaleZ)
             }
         } while (true)
     }

@@ -35,7 +35,7 @@ class Scene(private val reader: ModelReader, private val objService: ObjService,
     var mouseY = 0
 
     private fun setup() {
-        objService.getObjSprite(obj)?.draw(100, 100)
+        objService.getObjSprite(obj)?.draw(100, 100, 256, 256)
         repaint()
     }
 
@@ -53,8 +53,8 @@ class Scene(private val reader: ModelReader, private val objService: ObjService,
                 }
 
                 BUTTON3 -> {
-                    if (e.y < mouseY) obj.translateY -= 5 else if (e.y > mouseY) obj.translateY += 5
-                    if (e.x < mouseX) obj.translateX -= 5 else if (e.x > mouseX) obj.translateX += 5
+                    if (e.y < mouseY) obj.translateY -= 1 else if (e.y > mouseY) obj.translateY += 1
+                    if (e.x < mouseX) obj.translateX -= 1 else if (e.x > mouseX) obj.translateX += 1
                     mouseX = e.x
                     mouseY = e.y
                 }
