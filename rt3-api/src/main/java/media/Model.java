@@ -884,9 +884,7 @@ public class Model {
 
             vertexScreenX[v] = centerX + ((x << 9) / z);
             vertexScreenY[v] = centerY + ((y << 9) / z);
-            vertexDepth[v] = z - midZ;
-
-            // Store viewspace coordinates to be transformed into screen space later (textured or clipped triangles)
+            vertexDepth[v] = z;
 
         }
         try {
@@ -894,6 +892,7 @@ public class Model {
         } catch (Exception ignored) {
         }
     }
+
 
     /**
      * Draws the model.

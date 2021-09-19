@@ -1,7 +1,6 @@
 package sh.rebecca.inventory.model
 
-import io.guthix.buffer.readSmallSmart
-import io.netty.buffer.Unpooled
+import io.Buffer
 import media.Model
 import org.springframework.stereotype.Component
 import reader.ModelReader
@@ -21,41 +20,40 @@ class RSModelReader : ModelReader() {
         model.triangleVertexA = IntArray(header.faces)
         model.triangleVertexB = IntArray(header.faces)
         model.triangleVertexC = IntArray(header.faces)
-
         model.triangleColor = IntArray(header.faces)
 
-        val directions = Unpooled.wrappedBuffer(data)
-        directions.readBytes(header.vertexDirectionOffset)
+        val directions = Buffer(data)
+        directions.position = header.vertexDirectionOffset
 
-        val verticesX = Unpooled.wrappedBuffer(data)
-        verticesX.readBytes(header.xDataOffset)
+        val verticesX = Buffer(data)
+        verticesX.position = header.xDataOffset
 
-        val verticesY = Unpooled.wrappedBuffer(data)
-        verticesY.readBytes(header.yDataOffset)
+        val verticesY = Buffer(data)
+        verticesY.position = header.yDataOffset
 
-        val verticesZ = Unpooled.wrappedBuffer(data)
-        verticesZ.readBytes(header.zDataOffset)
+        val verticesZ = Buffer(data)
+        verticesZ.position = header.zDataOffset
 
         var baseX = 0
         var baseY = 0
         var baseZ = 0
 
         for(vertex in 0 until model.vertexCount) {
-            val mask = directions.readUnsignedByte()
+            val mask = directions.read()
 
             var x = 0
             var y = 0
             var z = 0
-            if((mask.toInt() and 1) != 0) {
-                x = verticesX.readSmallSmart()
+            if((mask and 1) != 0) {
+                x = verticesX.readSmart()
             }
 
-            if((mask.toInt() and 2) != 0) {
-                y = verticesY.readSmallSmart()
+            if((mask and 2) != 0) {
+                y = verticesY.readSmart()
             }
 
-            if((mask.toInt() and 4) != 0) {
-                z = verticesZ.readSmallSmart()
+            if((mask and 4) != 0) {
+                z = verticesZ.readSmart()
             }
             model.vertexX[vertex] = baseX + x
             model.vertexY[vertex] = baseY + y
@@ -64,23 +62,19 @@ class RSModelReader : ModelReader() {
             baseY = model.vertexY[vertex]
             baseZ = model.vertexZ[vertex]
         }
-        directions.release()
-        verticesX.release()
-        verticesY.release()
-        verticesZ.release()
 
-        val colors = Unpooled.wrappedBuffer(data)
-        colors.readBytes(header.colorDataOffset)
+        val colors = Buffer(data)
+        colors.position = header.colorDataOffset
+
         for(face in 0 until header.faces) {
-            model.triangleColor[face] = colors.readUnsignedShort()
+            model.triangleColor[face] = colors.readUShort()
         }
-        colors.release()
 
-        val faceData = Unpooled.wrappedBuffer(data)
-        faceData.readBytes(header.faceDataOffset)
+        val faceData = Buffer(data)
+        faceData.position = header.faceDataOffset
 
-        val types = Unpooled.wrappedBuffer(data)
-        types.readBytes(header.faceTypeOffset)
+        val types = Buffer(data)
+        types.position = header.faceTypeOffset
 
         var faceX = 0
         var faceY = 0
@@ -88,14 +82,14 @@ class RSModelReader : ModelReader() {
         var offset = 0
 
         for(vertex in 0 until header.faces) {
-            val type = types.readUnsignedByte()
+            val type = types.read()
 
-            if(type.toInt() == 1) {
-                faceX = faceData.readSmallSmart() + offset
+            if(type == 1) {
+                faceX = faceData.readSmart() + offset
                 offset = faceX
-                faceY = faceData.readSmallSmart() + offset
+                faceY = faceData.readSmart() + offset
                 offset = faceY
-                faceZ = faceData.readSmallSmart() + offset
+                faceZ = faceData.readSmart() + offset
                 offset = faceZ
 
                 model.triangleVertexA[vertex] = faceX
@@ -103,9 +97,9 @@ class RSModelReader : ModelReader() {
                 model.triangleVertexC[vertex] = faceZ
             }
 
-            if(type.toInt() == 2) {
+            if(type == 2) {
                 faceY = faceZ
-                faceZ = faceData.readSmallSmart() + offset
+                faceZ = faceData.readSmart() + offset
                 offset = faceZ
 
                 model.triangleVertexA[vertex] = faceX
@@ -113,9 +107,9 @@ class RSModelReader : ModelReader() {
                 model.triangleVertexC[vertex] = faceZ
             }
 
-            if(type.toInt() == 3) {
+            if(type == 3) {
                 faceX = faceZ
-                faceZ = faceData.readSmallSmart() + offset
+                faceZ = faceData.readSmart() + offset
                 offset = faceZ
 
                 model.triangleVertexA[vertex] = faceX
@@ -123,11 +117,11 @@ class RSModelReader : ModelReader() {
                 model.triangleVertexC[vertex] = faceZ
             }
 
-            if(type.toInt() == 4) {
+            if(type == 4) {
                 val temp = faceX
                 faceX = faceY
                 faceY = temp
-                faceZ = faceData.readSmallSmart() + offset
+                faceZ = faceData.readSmart() + offset
                 offset = faceZ
 
                 model.triangleVertexA[vertex] = faceX
@@ -135,30 +129,27 @@ class RSModelReader : ModelReader() {
                 model.triangleVertexC[vertex] = faceZ
             }
         }
-        types.release()
-        faceData.release()
         return model
     }
 
     fun decode317Header(data: ByteArray): ModelHeader {
-        val buffer = Unpooled.wrappedBuffer(data)
-        buffer.readBytes(data.size - 18)
+        val buffer = Buffer(data)
+        buffer.position = data.size - 18
 
-        val vertices = buffer.readUnsignedShort()
-        val faceCount = buffer.readUnsignedShort()
-        val texturedFaceCount = buffer.readUnsignedByte()
+        val vertices = buffer.readUShort()
+        val faceCount = buffer.readUShort()
+        val texturedFaceCount = buffer.read()
 
-        val useTextures = buffer.readUnsignedByte()
-        val useFacePriority = buffer.readUnsignedByte()
-        val useTransparency = buffer.readUnsignedByte()
-        val useFaceSkinning = buffer.readUnsignedByte()
-        val useVertexSkinning = buffer.readUnsignedByte()
+        val useTextures = buffer.read()
+        val useFacePriority = buffer.read()
+        val useTransparency = buffer.read()
+        val useFaceSkinning = buffer.read()
+        val useVertexSkinning = buffer.read()
 
-        val xDataOffset = buffer.readUnsignedShort()
-        val yDataOffset = buffer.readUnsignedShort()
-        val zDataOffset = buffer.readUnsignedShort()
-        val faceDataLength = buffer.readUnsignedShort()
-        buffer.release()
+        val xDataOffset = buffer.readUShort()
+        val yDataOffset = buffer.readUShort()
+        val zDataOffset = buffer.readUShort()
+        val faceDataLength = buffer.readUShort()
 
         var offset = 0
         val vertexDirectionOffset = offset

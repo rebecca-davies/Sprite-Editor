@@ -3,6 +3,7 @@ package sh.rebecca.inventory.obj
 import image.Graphics2D
 import image.Graphics3D
 import image.Sprite
+import media.Model
 import org.springframework.cache.annotation.Cacheable
 import org.springframework.stereotype.Service
 import sh.rebecca.inventory.model.ModelService
@@ -18,7 +19,7 @@ class ObjService(private val repository: ObjRepository, private val modelService
         return repository.findById(id)
     }
 
-    @Cacheable("objsprite")
+   @Cacheable("objsprite")
     fun getObjSprite(obj: Obj): Sprite? {
         val model = modelService.getModel(obj.model) ?: return null
         Graphics3D.createPalette(0.7)
@@ -77,11 +78,13 @@ class ObjService(private val repository: ObjRepository, private val modelService
                 }
             }
         }
+        Graphics2D.drawRect(0, 0, 32, 32, 0xff00ff)
         Graphics2D.setTarget(raster, width, height)
         Graphics2D.setBounds(clipLeft, clipTop, clipRight, clipBottom)
         Graphics3D.centerX = centreX
         Graphics3D.centerY = centreY
         Graphics3D.offsets = scanOffsets
+
         return rendered
     }
 

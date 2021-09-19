@@ -1,13 +1,12 @@
 package sh.rebecca.inventory.obj
 
-import io.netty.buffer.ByteBuf
+import io.Buffer
 import org.springframework.stereotype.Component
-import sh.rebecca.inventory.buffer.readString317
 
 @Component
 class ObjReader {
 
-    fun read(buffer: ByteBuf, id: Int): Obj {
+    fun read(buffer: Buffer, id: Int): Obj {
         var modelId = 0
         var zoom = 2000
         var translateX = 0
@@ -24,72 +23,72 @@ class ObjReader {
         var scaleZ = 128
 
         do {
-            var opcode = buffer.readUnsignedByte()
-            when(opcode.toInt()) {
-                1 ->  modelId = buffer.readUnsignedShort()
-                2 -> buffer.readString317()
-                3 -> buffer.readString317()
-                4 -> zoom = buffer.readUnsignedShort()
-                5 -> pitch = buffer.readUnsignedShort()
-                6 -> yaw = buffer.readUnsignedShort()
+            val opcode = buffer.read()
+            when(opcode) {
+                1 ->  modelId = buffer.readUShort()
+                2 -> buffer.readString()
+                3 -> buffer.readStringBytes()
+                4 -> zoom = buffer.readUShort()
+                5 -> pitch = buffer.readUShort()
+                6 -> yaw = buffer.readUShort()
                 7 -> {
-                    translateX = buffer.readUnsignedShort()
+                    translateX = buffer.readUShort()
                     if(translateX > 32767) {
                         translateX -= 65536
                     }
                 }
                 8 -> {
-                    translateY = buffer.readUnsignedShort()
+                    translateY = buffer.readUShort()
                     if(translateY > 32767) {
                         translateY -= 65536
                     }
                 }
-                10 -> buffer.readUnsignedShort()
+                10 -> buffer.readUShort()
                 12 -> buffer.readInt()
                 23 -> {
-                    buffer.readUnsignedShort()
+                    buffer.readUShort()
                     buffer.readByte()
                 }
-                24 -> buffer.readUnsignedShort()
+                24 -> buffer.readUShort()
                 25 -> {
-                    buffer.readUnsignedShort()
+                    buffer.readUShort()
                     buffer.readByte()
                 }
-                26 -> buffer.readUnsignedShort()
+                26 -> buffer.readUShort()
                 in 30..34 -> {
-                    buffer.readString317()
+                    buffer.readString()
                 }
                 in 35..39 -> {
-                    buffer.readString317()
+                    buffer.readString()
                 }
                 40 -> {
-                    var count = buffer.readUnsignedByte()
-                    originalColors = IntArray(count.toInt())
-                    replacementColors = IntArray(count.toInt())
+                    val count = buffer.read()
+                    originalColors = IntArray(count)
+                    replacementColors = IntArray(count)
                     for(i in 0 until count) {
-                        originalColors[i] = buffer.readUnsignedShort()
-                        replacementColors[i] = buffer.readUnsignedShort()
+                        originalColors[i] = buffer.readUShort()
+                        replacementColors[i] = buffer.readUShort()
                     }
                 }
-                78 -> buffer.readUnsignedShort()
-                79 -> buffer.readUnsignedShort()
-                90 -> buffer.readUnsignedShort()
-                91 -> buffer.readUnsignedShort()
-                92 -> buffer.readUnsignedShort()
-                93 -> buffer.readUnsignedShort()
-                95 -> roll = buffer.readUnsignedShort()
-                97 -> buffer.readUnsignedShort()
-                98 -> buffer.readUnsignedShort()
+                78 -> buffer.readUShort()
+                79 -> buffer.readUShort()
+                90 -> buffer.readUShort()
+                91 -> buffer.readUShort()
+                92 -> buffer.readUShort()
+                93 -> buffer.readUShort()
+                95 -> roll = buffer.readUShort()
+                97 -> buffer.readUShort()
+                98 -> buffer.readUShort()
                 in 100..109 -> {
-                    buffer.readUnsignedShort()
-                    buffer.readUnsignedShort()
+                    buffer.readUShort()
+                    buffer.readUShort()
                 }
-                110 -> scaleX = buffer.readUnsignedShort()
-                111 -> scaleZ = buffer.readUnsignedShort()
-                112 -> scaleY = buffer.readUnsignedShort()
+                110 -> scaleX = buffer.readUShort()
+                111 -> scaleZ = buffer.readUShort()
+                112 -> scaleY = buffer.readUShort()
                 113 -> ambient = buffer.readByte().toInt()
                 114 -> attenuation = buffer.readByte() * 5
-                115 -> buffer.readUnsignedShort()
+                115 -> buffer.read()
                 0 -> return Obj(id, modelId, originalColors, replacementColors, pitch, yaw, roll, translateX, translateY, zoom, ambient, attenuation, scaleX, scaleY, scaleZ)
             }
         } while (true)

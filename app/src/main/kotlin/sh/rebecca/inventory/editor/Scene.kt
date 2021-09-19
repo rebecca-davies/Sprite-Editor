@@ -15,7 +15,7 @@ import javax.swing.JComponent
 @Component
 class Scene(private val reader: ModelReader, private val objService: ObjService, private val library: CacheLibrary) : JComponent() {
 
-    var obj = objService.getObj(0)!! //test
+    var obj = objService.getObj(1042)!! //test
 
     init {
         this.addMouseMotionListener(this.drag())
@@ -31,13 +31,8 @@ class Scene(private val reader: ModelReader, private val objService: ObjService,
         viewport.draw(graphics, 0, 0)
     }
 
-    var rotationX = 0
-    var rotationY = 0
     var mouseX = 0
     var mouseY = 0
-    var zoom = 200
-    var sceneX = 0
-    var sceneY = 0
 
     private fun setup() {
         objService.getObjSprite(obj)?.draw(100, 100)
