@@ -15,7 +15,7 @@ import javax.swing.JComponent
 @Component
 class Scene(private val reader: ModelReader, private val objService: ObjService, private val library: CacheLibrary) : JComponent() {
 
-    var obj = objService.getObj(1042)!! //test
+    var obj = objService.getObj(0)!! //test
 
     init {
         this.addMouseMotionListener(this.drag())
@@ -24,9 +24,9 @@ class Scene(private val reader: ModelReader, private val objService: ObjService,
 
     override fun paintComponent(g: Graphics) {
         super.paintComponent(g)
-        val viewport = ImageProducer3D(width, height)
+        val viewport = ImageProducer3D(width, 320)
         viewport.bind()
-        Graphics2D.fillRect(0, 0, width, height, 0xffffff)
+        Graphics2D.fillRect(0, 0, width, 320, 0xff00ff)
         setup()
         viewport.draw(graphics, 0, 0)
     }
@@ -35,7 +35,7 @@ class Scene(private val reader: ModelReader, private val objService: ObjService,
     var mouseY = 0
 
     private fun setup() {
-        objService.getObjSprite(obj)?.draw(100, 100, 256, 256)
+        objService.getObjSprite(obj)?.draw(0, 0, width, width)
         repaint()
     }
 

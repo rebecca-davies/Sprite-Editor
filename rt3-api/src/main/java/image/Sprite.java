@@ -167,18 +167,9 @@ public class Sprite {
 	 * @param h the draw height.
 	 */
 	public void draw(int x, int y, int w, int h) {
+	    Graphics2D.fillRect(x, y, w, h, 0x554b3f);
 		Graphics2D.drawSprite(this, x, y, w, h);
-		drawGrid(x, y, w, h);
 	}
-
-	public void drawGrid(int x, int y, int w, int h) {
-	    for(int col = 0; col <= h; col += 8) {
-	        Graphics2D.drawVerticalLine(x + col, y, h, 0x000000);
-        }
-        for(int row = 0; row <= w; row += 8) {
-            Graphics2D.drawHorizontalLine(x, y + row, w, 0x000000);
-        }
-    }
 
 	/**
 	 * Draws the sprite rotated around a point.

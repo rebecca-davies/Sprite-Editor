@@ -3,20 +3,26 @@ package sh.rebecca.inventory.editor
 import javafx.beans.property.SimpleObjectProperty
 import javafx.collections.FXCollections
 import javafx.embed.swing.SwingNode
+import javafx.geometry.Pos
+import javafx.scene.Node
+import javafx.scene.control.ListView
 import javafx.scene.control.SelectionMode
+import javafx.scene.layout.Priority
 import sh.rebecca.inventory.obj.Obj
 import sh.rebecca.inventory.obj.ObjService
 import tornadofx.*
 
 class InventoryEditorStyle : Stylesheet() {
     init {
-        Companion.root {
-            prefWidth = 650.px
+        root {
+            prefWidth = 520.px
             prefHeight = 800.px
         }
-        Companion.scrollPane {
-            prefWidth = 400.px
+
+        scrollPane {
+            prefWidth = 200.px
         }
+
     }
 }
 
@@ -26,45 +32,71 @@ class InventoryEditorView : View() {
     private val scene: Scene by di()
     private val modelWrapper = SwingNode()
     private val selectedItem = SimpleObjectProperty<Obj>()
-    private val items = FXCollections.observableArrayList((0 until itemService.getCount()).mapNotNull {
+    private var items = FXCollections.observableArrayList((0 until itemService.getCount()).mapNotNull {
         if(itemService.getObj(it)!!.name.isNotEmpty()) itemService.getObj(it) else null
     }).toObservable()
+    private var list = ListView(items)
 
     init {
         title = "Inventory Tool"
-        selectedItem.onChange { selected ->
-            scene.obj = selected!!
+        selectedItem.onChange {
+            if (it != null) scene.obj = it
         }
     }
 
     override val root = borderpane {
         modelWrapper.content = this@InventoryEditorView.scene
-        center = modelWrapper
-        right = listview(items) {
-            prefWidth = 200.0
-            selectionModel.selectionMode = SelectionMode.SINGLE
-            bindSelected(this@InventoryEditorView.selectedItem)
-            cellFormat {
-                text = "${it?.id}: ${it?.name}"
+        top {
+            menubar {
+                menu("File") {
+                    item("Open Cache", )
+                    item("Open Model")
+                    item("Save")
+                }
+                menu("Edit") {
+                    item("Undo")
+                    item("Redo")
+                }
+                menu("Help") {
+                    item("Github")
+                    item("About")
+                }
+            }
+        }
+        center {
+
+            hbox {
+                label("hasdadasdasdasdi") {
+                    alignment = Pos.BOTTOM_LEFT
+                }
+            }
+            hbox {
+                center = modelWrapper
             }
         }
 
-        top = menubar {
-            menu("File") {
-                item("Open")
-                item("Save")
-            }
-            menu("Edit") {
-                item("Undo")
-                item("Redo")
-            }
-            menu("Help") {
-                item("Github")
-                item("About")
+        right {
+            vbox {
+                textfield("Search...") {
+                    textProperty().addListener { obs, old, new ->
+                        list.items = items.filter { obj ->
+                            obj.name.contains(new) || obj.id == new.toIntOrNull()
+                        }.toObservable()
+                    }
+                }
+                list = listview(items) {
+                    prefWidth = 200.0
+                    selectionModel.selectionMode = SelectionMode.SINGLE
+                    bindSelected(this@InventoryEditorView.selectedItem)
+                    cellFormat {
+                        text = "${it?.id}: ${it?.name}"
+                    }
+
+                    vgrow = Priority.ALWAYS
+                }
             }
         }
-
     }
-
-
 }
+
+
