@@ -15,20 +15,19 @@ import java.awt.event.MouseEvent.*
 import javax.swing.JComponent
 
 @Component
-class Scene(private val objService: ObjService) : JFXPanel() {
+class Scene(private val objService: ObjService) : JComponent() {
 
-    var obj = objService.getObj(1042)!! //test
+    var obj = objService.getObj(1)!!
 
     init {
-        this.addMouseMotionListener(this.drag())
-        this.addMouseWheelListener(this.scroll())
+        this.maximumSize = Dimension(320, 320)
     }
 
     override fun paintComponent(g: Graphics) {
         super.paintComponent(g)
-        val viewport = ImageProducer3D(width, height)
+        val viewport = ImageProducer3D(320, 320)
         viewport.bind()
-        Graphics2D.fillRect(0, 0, width, height, 0xff00ff)
+        Graphics2D.fillRect(0, 0, 320, 320, 0xff00ff)
         setup()
         viewport.draw(graphics, 0, 0)
     }
@@ -37,34 +36,7 @@ class Scene(private val objService: ObjService) : JFXPanel() {
     var mouseY = 0
 
     private fun setup() {
-        objService.getObjSprite(obj)?.draw(0, 0, width, height)
+        objService.getObjSprite(obj)?.draw(0, 0, 320, 320)
         repaint()
     }
-
-    fun drag() = object: MouseMotionListener {
-        override fun mouseDragged(e: MouseEvent?) {
-            when(e!!.button) {
-                BUTTON1 -> {
-                    if (e.y < mouseY) obj.roll -= (mouseY - e.y) else if (e.y > mouseY) obj.roll += (e.y - mouseY)
-                    if (e.x < mouseX) obj.yaw += (mouseX - e.x) else if (e.x > mouseX) obj.yaw -= (e.x - mouseX)
-                    mouseX = e.x
-                    mouseY = e.y
-                    obj.yaw = fixRotation(obj.yaw)
-                    obj.roll = fixRotation(obj.roll)
-                    repaint()
-                }
-
-                BUTTON3 -> {
-                    if (e.y < mouseY) obj.translateY -= 1 else if (e.y > mouseY) obj.translateY += 1
-                    if (e.x < mouseX) obj.translateX -= 1 else if (e.x > mouseX) obj.translateX += 1
-                    mouseX = e.x
-                    mouseY = e.y
-                }
-            }
-        }
-
-        override fun mouseMoved(e: MouseEvent?) {
-        }
-    }
-    fun scroll() = MouseWheelListener { e -> obj.zoom += e!!.wheelRotation * 25 }
 }
