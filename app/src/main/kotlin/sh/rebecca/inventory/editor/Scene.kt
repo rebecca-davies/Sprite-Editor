@@ -3,19 +3,21 @@ package sh.rebecca.inventory.editor
 import com.displee.cache.CacheLibrary
 import image.Graphics2D
 import image.ImageProducer3D
+import javafx.embed.swing.JFXPanel
 import org.springframework.stereotype.Component
 import reader.ModelReader
 import sh.rebecca.inventory.input.fixRotation
 import sh.rebecca.inventory.obj.ObjService
+import java.awt.Dimension
 import java.awt.Graphics
 import java.awt.event.*
 import java.awt.event.MouseEvent.*
 import javax.swing.JComponent
 
 @Component
-class Scene(private val reader: ModelReader, private val objService: ObjService, private val library: CacheLibrary) : JComponent() {
+class Scene(private val objService: ObjService) : JFXPanel() {
 
-    var obj = objService.getObj(0)!! //test
+    var obj = objService.getObj(1042)!! //test
 
     init {
         this.addMouseMotionListener(this.drag())
@@ -24,9 +26,9 @@ class Scene(private val reader: ModelReader, private val objService: ObjService,
 
     override fun paintComponent(g: Graphics) {
         super.paintComponent(g)
-        val viewport = ImageProducer3D(width, 320)
+        val viewport = ImageProducer3D(width, height)
         viewport.bind()
-        Graphics2D.fillRect(0, 0, width, 320, 0xff00ff)
+        Graphics2D.fillRect(0, 0, width, height, 0xff00ff)
         setup()
         viewport.draw(graphics, 0, 0)
     }
@@ -35,7 +37,7 @@ class Scene(private val reader: ModelReader, private val objService: ObjService,
     var mouseY = 0
 
     private fun setup() {
-        objService.getObjSprite(obj)?.draw(0, 0, width, width)
+        objService.getObjSprite(obj)?.draw(0, 0, width, height)
         repaint()
     }
 
@@ -64,10 +66,5 @@ class Scene(private val reader: ModelReader, private val objService: ObjService,
         override fun mouseMoved(e: MouseEvent?) {
         }
     }
-    fun scroll() = object: MouseWheelListener {
-        override fun mouseWheelMoved(e: MouseWheelEvent?) {
-            obj.zoom += e!!.wheelRotation * 25
-        }
-
-    }
+    fun scroll() = MouseWheelListener { e -> obj.zoom += e!!.wheelRotation * 25 }
 }
